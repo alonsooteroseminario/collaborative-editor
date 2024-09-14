@@ -87,6 +87,8 @@ export function Editor({ roomId, currentUserType }: { roomId: string, currentUse
     display: flex;
     justify-content: center;
     align-items: flex-start;
+    transform: scale(0.9); /* Adjust this value as needed */
+    transform-origin: center top;
   }
   `;
   const handleFormSubmit = (formData: any) => {
@@ -130,7 +132,7 @@ export function Editor({ roomId, currentUserType }: { roomId: string, currentUse
             <div className="editor-inner min-h-[900px] relative mb-5 h-fit w-full max-w-[800px] shadow-md lg:mb-10">
               {/* Yellow background and centered TransportForm */}
               <div className="transport-form-background mt-1">
-                <div className="transport-form-container">
+                <div className="transport-form-container w-fit h-fit overflow-auto">
                   <TransportForm onSubmit={handleFormSubmit} />
                 </div>
               </div>
