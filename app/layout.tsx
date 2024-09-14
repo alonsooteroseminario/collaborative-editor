@@ -13,8 +13,8 @@ const fontSans = FontSans({
 })
 
 export const metadata: Metadata = {
-  title: 'LiveDocs',
-  description: 'Your go-to collaborative editor',
+  title: 'Jorno App',
+  description: 'Efficient timesheet management for truck drivers. Track hours, generate invoices, and streamline payroll. User-friendly interface for the transportation industry.',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
