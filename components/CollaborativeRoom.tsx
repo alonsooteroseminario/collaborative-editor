@@ -149,10 +149,8 @@ const CollaborativeRoom = ({
               </SignedIn>
             </div>
           </Header>
-          {/* <Editor roomId={roomId} currentUserType={currentUserType} /> */}
 
-
-          <TransportForm onSubmit={handleFormSubmit} />
+          <Editor roomId={roomId} currentUserType={currentUserType} />
 
         </div>
       </ClientSideSuspense>

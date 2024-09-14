@@ -42,6 +42,7 @@ export function TransportForm({ onSubmit }: { onSubmit: (formData: any) => void 
             <div className="w-12 h-12 bg-gray-300 rounded-full mr-2"></div>
             <div>
               <h1 className="text-xl font-bold">MBLogix</h1>
+              
               <p className="text-sm">Courtier en transport</p>
             </div>
           </div>
