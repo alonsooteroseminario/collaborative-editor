@@ -18,6 +18,8 @@ import FloatingToolbarPlugin from './plugins/FloatingToolbarPlugin'
 import { useThreads } from '@liveblocks/react/suspense';
 import Comments from '../Comments';
 import { DeleteModal } from '../DeleteModal';
+import EditorForm from '@/components/editor/EditorForm';
+import ECLEnterpriseForm from '@/components/editor/ECLEnterpriseForm';
 
 // Catch any errors that occur during Lexical updates and log them
 // or throw them as needed. If you don't throw them, Lexical will
@@ -46,14 +48,14 @@ export function Editor({ roomId, currentUserType }: { roomId: string, currentUse
     <LexicalComposer initialConfig={initialConfig}>
       <div className="editor-container size-full">
         <div className="toolbar-wrapper flex min-w-full justify-between">
-          <ToolbarPlugin />
+          {/* <ToolbarPlugin /> */}
           {currentUserType === 'editor' && <DeleteModal roomId={roomId} />}
         </div>
 
         <div className="editor-wrapper flex flex-col items-center justify-start">
           {status === 'not-loaded' || status === 'loading' ? <Loader /> : (
-            <div className="editor-inner min-h-[1100px] relative mb-5 h-fit w-full max-w-[800px] shadow-md lg:mb-10">
-              <RichTextPlugin
+            <div className="editor-inner relative mb-5 h-fit w-full max-w-[800px] shadow-md lg:mb-10">
+              {/* <RichTextPlugin
                 contentEditable={
                   <ContentEditable className="editor-input h-full" />
                 }
@@ -62,7 +64,10 @@ export function Editor({ roomId, currentUserType }: { roomId: string, currentUse
               />
               {currentUserType === 'editor' && <FloatingToolbarPlugin />}
               <HistoryPlugin />
-              <AutoFocusPlugin />
+              <AutoFocusPlugin /> */}
+
+                <ECLEnterpriseForm />
+
             </div>
           )}
 
