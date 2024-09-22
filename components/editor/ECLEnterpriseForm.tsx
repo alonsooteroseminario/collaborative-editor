@@ -1,9 +1,16 @@
 'use client';
+import { useAppDispatch, useAppSelector } from '@/app/store/hooks';
+import { SET_FORM_DATA } from '@/app/store/slice/formSlice';
 import React, { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
 
 const ECLEnterpriseForm = () => {
-
+  const dispatch = useAppDispatch();
+  const { 
+    form 
+  } = useAppSelector(state => state.form);
   const [formData, setFormData] = useState({
+    form: '', // Add the 'form' property here
     client: '',
     workLocation: '',
     contractNumber: '',
@@ -21,6 +28,19 @@ const ECLEnterpriseForm = () => {
     numeroPlaque: '',
     signature: '',
   });
+
+  useEffect(() => {
+    console.log('form:', form);
+  }, [form]);
+
+  useEffect(() => {
+    console.log('Form data:', formData);
+
+    // SET_FORM_DATA
+    dispatch(SET_FORM_DATA(formData));
+
+
+  }, [dispatch, formData]);
 
   const [documentId, setDocumentId] = useState('');
 
