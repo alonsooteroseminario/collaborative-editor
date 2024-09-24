@@ -1,0 +1,38 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model TimeSheet {
+  id                 String     @id @default(auto()) @map("_id") @db.ObjectId
+  client             String
+  workLocation       String
+  contractNumber     String
+  dateEntries        DateEntry[]
+  totalHeuresSimple  String
+  totalHeuresDouble  String
+  totalVoyageSimple  String
+  totalVoyageDouble  String
+  materialTransported String
+  autresPrecisions   String
+  ejesCamion         String
+  numeroCamion       String
+  transporteur       String
+  nomChauffeur       String
+  numeroPlaque       String
+  signature          String
+  userId             String
+  createdAt          DateTime   @default(now())
+  updatedAt          DateTime   @updatedAt
+}
+
+type DateEntry {
+  date      String
+  startTime String
+  endTime   String
+  hours     String
+}

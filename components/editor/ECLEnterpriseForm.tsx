@@ -1,13 +1,15 @@
 'use client';
 import { useAppDispatch, useAppSelector } from '@/app/store/hooks';
-import { SET_FORM_DATA } from '@/app/store/slice/formSlice';
+import { ADD_DATE_ENTRY, handleSubmitTimeSheet, SET_FORM_DATA, SET_USER_INFO, UPDATE_DATE_ENTRY, UPDATE_FIELD, UserInfo } from '@/app/store/slice/formSlice';
+import { useUser } from '@clerk/nextjs';
 import React, { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { toast } from 'react-hot-toast';
 
 const ECLEnterpriseForm = () => {
   const dispatch = useAppDispatch();
   const { 
-    form 
+    form,
+    userInfo
   } = useAppSelector(state => state.form);
   const [formData, setFormData] = useState({
     form: '', // Add the 'form' property here
@@ -28,10 +30,52 @@ const ECLEnterpriseForm = () => {
     numeroPlaque: '',
     signature: '',
   });
+  const { user: clerkUser } = useUser();
+  const { user, isLoaded, isSignedIn } = useUser();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+
 
   useEffect(() => {
-    console.log('form:', form);
-  }, [form]);
+    if (isLoaded && isSignedIn && user) {
+      dispatch(SET_USER_INFO({
+        id: user.id,
+        firstName: user.firstName || '',
+        lastName: user.lastName || '',
+        email: user.primaryEmailAddress?.emailAddress || '',
+      }));
+    }
+  }, [isLoaded, isSignedIn, user, dispatch]);
+
+
+  useEffect(() => {
+    if(userInfo){
+      console.log('User Info:', userInfo);
+    }
+  }, [userInfo]);
+
+  useEffect(() => {
+    if (Object.keys(form).length === 0) {
+      dispatch(SET_FORM_DATA({
+        client: '',
+        workLocation: '',
+        contractNumber: '',
+        dateEntries: [{ date: '', startTime: '', endTime: '', hours: '' }],
+        totalHeuresSimple: '',
+        totalHeuresDouble: '',
+        totalVoyageSimple: '',
+        totalVoyageDouble: '',
+        materialTransported: '',
+        autresPrecisions: '',
+        ejesCamion: '',
+        numeroCamion: '',
+        transporteur: '',
+        nomChauffeur: '',
+        numeroPlaque: '',
+        signature: '',
+      }));
+    }
+  }, [dispatch, form]);
 
   useEffect(() => {
     console.log('Form data:', formData);
@@ -56,41 +100,66 @@ const ECLEnterpriseForm = () => {
 
   useEffect(() => {
     if(documentId !==``) {
-        console.log('Document ID:', documentId);
+        
+
+        if(clerkUser) {
+            console.log('clerkUser:', clerkUser);
+            console.log('Document ID:', documentId);
+
+            // dispatch GET_UNIQUE_DOCUMENT_INFO with clerkUser and documentId
+
+
+
+        }
+
+
     }
-  }, [documentId]);
+  }, [clerkUser, documentId]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData(prevData => ({
-      ...prevData,
-      [name]: value
-    }));
+    dispatch(UPDATE_FIELD({ name, value }));
   };
 
   const handleDateEntryChange = (index: number, field: string, value: string) => {
-    const newDateEntries = formData.dateEntries.map((entry, i) => {
-      if (i === index) {
-        return { ...entry, [field]: value };
-      }
-      return entry;
-    });
-    setFormData(prevData => ({
-      ...prevData,
-      dateEntries: newDateEntries
-    }));
+    dispatch(UPDATE_DATE_ENTRY({ index, field, value }));
   };
 
-  const addDateEntry = () => {
-    setFormData(prevData => ({
-      ...prevData,
-      dateEntries: [...prevData.dateEntries, { date: '', startTime: '', endTime: '', hours: '' }]
-    }));
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Form submitted:', formData);
+    setIsSubmitting(true);
+
+    if (!userInfo || !documentId) {
+      toast.error("User information or document ID is missing");
+      setIsSubmitting(false);
+      return;
+    }
+
+    const object = {
+      ...form,
+      userInfo,
+      documentId
+    };
+
+    try {
+      const resultAction = await dispatch(handleSubmitTimeSheet({ object }));
+      if (handleSubmitTimeSheet.fulfilled.match(resultAction)) {
+        toast.success("TimeSheet submitted successfully");
+        // Optionally reset the form or redirect the user
+        // setFormData(initialFormState);
+        // router.push('/dashboard'); // If you want to redirect after submission
+      } else if (handleSubmitTimeSheet.rejected.match(resultAction)) {
+        throw new Error(resultAction.error.message);
+      }
+    } catch (error: any) {
+      toast.error(`Failed to submit TimeSheet: ${error.message}`);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleAddDateEntry = () => {
+    dispatch(ADD_DATE_ENTRY());
   };
 
   const WatermarkTag = ({ id }: any) => (
@@ -200,7 +269,7 @@ const ECLEnterpriseForm = () => {
           </table>
           <button
             type="button"
-            onClick={addDateEntry}
+            onClick={handleAddDateEntry}
             className="mt-2 text-sm text-pink-600 hover:text-pink-800"
           >
             + Ajouter une entrée
@@ -355,8 +424,12 @@ const ECLEnterpriseForm = () => {
           />
         </div>
         <div className="text-right mt-6">
-          <button type="submit" className="px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500">
-            Soumettre
+          <button 
+            type="submit" 
+            className="px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 disabled:opacity-50"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? 'Soumission en cours...' : 'Soumettre'}
           </button>
         </div>
       </form>

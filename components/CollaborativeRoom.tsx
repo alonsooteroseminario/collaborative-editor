@@ -72,6 +72,7 @@ const CollaborativeRoom = ({ roomId, roomMetadata, users, currentUserType }: Col
                 <Input 
                   type="text"
                   value={documentTitle}
+                  // @ts-ignore
                   ref={inputRef}
                   placeholder="Enter title"
                   onChange={(e) => setDocumentTitle(e.target.value)}
